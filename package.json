@@ -1,0 +1,15 @@
+{
+  "name": "cereicash-api",
+  "version": "1.0.0",
+  "description": "CEREICASH NH농협 오픈뱅킹 API 서버",
+  "main": "api/index.js",
+  "scripts": {
+    "start": "node api/index.js",
+    "dev": "node api/index.js"
+  },
+  "dependencies": {
+    "axios": "^1.6.0",
+    "cors": "^2.8.5",
+    "express": "^4.18.2"
+  }
+}
