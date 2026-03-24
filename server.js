@@ -19,11 +19,11 @@ app.use(cors({ origin: '*', methods: ['GET','POST','OPTIONS'], allowedHeaders: [
 
 // ── 환경변수 ──────────────────────────────────────────────
 const NH_API_BASE    = 'https://developers.nonghyup.com';
-const CLIENT_ID      = process.env.NH_CLIENT_ID      || '';
+const CLIENT_ID      = process.env.NH_CLIENT_ID      || '003297';
 const CLIENT_SECRET  = process.env.NH_CLIENT_SECRET  || '';
-const ACCESS_TOKEN   = process.env.NH_ACCESS_TOKEN   || '';
+const ACCESS_TOKEN   = process.env.NH_ACCESS_TOKEN   || '5059bac1ce0083197aecd7c065a6d85b0c9b8fe9298c637f392aa2e77b046a33';
 const ACCOUNT_NO     = process.env.NH_ACCOUNT_NO     || '3125821379791';
-const ISCD           = '051400'; // 기관코드 (농협)
+const ISCD           = process.env.NH_ISCD           || '003297'; // 기관코드
 
 // ── 유틸 ─────────────────────────────────────────────────
 function getDate() {
@@ -37,16 +37,16 @@ function generateSeqNo() {
   const pad = n => String(n).padStart(2,'0');
   return `${now.getFullYear()}${pad(now.getMonth()+1)}${pad(now.getDate())}${pad(now.getHours())}${pad(now.getMinutes())}${pad(now.getSeconds())}`;
 }
-function makeHeader(apiNm) {
+function makeHeader(apiNm, apiSvcCd) {
   return {
-    ApiNm:       apiNm,
-    Tsymd:       getDate(),
-    Trtm:        getTime(),
-    Iscd:        ISCD,
-    FintechApsno:'001',
-    ApiSvcCd:    'DrawingTransferA',
-    IsTuno:      generateSeqNo(),
-    AccessToken: ACCESS_TOKEN
+    ApiNm:        apiNm,
+    Tsymd:        getDate(),
+    Trtm:         getTime(),
+    Iscd:         ISCD,
+    FintechApsno: '001',
+    ApiSvcCd:     apiSvcCd || 'DrawingTransferA',
+    IsTuno:       generateSeqNo(),
+    AccessToken:  ACCESS_TOKEN
   };
 }
 
@@ -65,7 +65,7 @@ app.get('/health', (req, res) => {
 app.get('/api/balance', async (req, res) => {
   try {
     const r = await axios.post(`${NH_API_BASE}/InquireBalance`, {
-      Header:   makeHeader('InquireBalance'),
+      Header:   makeHeader('InquireBalance', 'ReceivedTransferA'),
       DrtrRgyn: 'Y',
       BrdtBrno: '',
       Bncd:     '011',
@@ -83,7 +83,7 @@ app.get('/api/transactions', async (req, res) => {
   const { startDate, endDate } = req.query;
   try {
     const r = await axios.post(`${NH_API_BASE}/InquireTransactionHistory`, {
-      Header:  makeHeader('InquireTransactionHistory'),
+      Header:  makeHeader('InquireTransactionHistory', 'ReceivedTransferA'),
       Bncd:    '011',
       Acno:    ACCOUNT_NO,
       Inqscd:  '1',
